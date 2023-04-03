@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[findId]</title>
+    <link rel="stylesheet" href="/header.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $("#footers").load("/footer.html");
+        });
+        function findId() {
+    		if (findIdForm.member_name.value == "") {
+    			alert("이름을 입력해 주세요.");
+    			findIdForm.member_name.focus();
+    			return;
+    		}
+    		if (findIdForm.member_email.value == "") {
+    			alert("이메일을 입력해 주세요.");
+    			findIdForm.member_email.focus();
+    			return;
+    		}
+    		
+    		var member_name =$("#findmember_name").val();
+    		var member_email =$("#findmember_email").val();
+    		
+    		var sendData="member_name="+member_name+'&member_email='+member_email;
+    		
+    		
+    		$.ajax({
+    			url : "findId",
+    			method : "post",
+    			data : sendData,
+    			dataType : "text",
+    			success : function(text) {
+    				if (text != null) {
+    					$("#member_id").html("아이디 = "+text);
+    				} else {
+    					$("#member_id").html("해당정보가 없습니다.");
+    				}
+    			},
+    			error : function(xhr) {
+    				alert("에러코드 = " + xhr.status);
+    			}
+    		});
+    	}
+    </script>
+    <style>
+    </style>
+</head>
+<header>
+    <div class="topmenu upper">
+		<div class="home"><a href="/">logo</a></div>
+		<span th:if="${session.loginMember}">
+			<div class="member"><a href="/logout">로그아웃</a></div>
+		</span>
+		<span th:unless="${session.loginMember}">
+			<div class="member"><a href="/members/join">회원가입</a></div>
+			<div class="member"><a href="/members/login">로그인</a></div>
+		</span>
+    </div>
+    <nav class="topmenu">
+        <ul>
+          <li><a href="#">소개</a></li>
+          <li><a href="#">공지사항</a></li>
+          <li><a href="#">과목</a>
+            <ul class="submenu">
+              <li><a href="#">JAVA</a></li>
+              <li><a href="#">HTML</a></li>
+              <li><a href="#">DATABASE</a></li>
+              <li><a href="#">PYTHON</a></li>
+            </ul>
+          </li>
+          <li><a href="#">고객센터</a>
+            <ul class="submenu">
+              <li><a href="#">자주 묻는 질문</a></li>
+              <li><a href="#">문의 게시판</a></li>
+              <li><a href="#">이용약관</a></li>
+            </ul>
+          </li>
+          <li><a href="#">마이페이지</a>
+            <ul class="submenu">
+              <li><a href="#">내정보</a></li>
+              <li><a href="#">내강의</a></li>
+              <li th:if="${session.loginMember}"><a href="/logout">로그아웃</a></li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+</header>
+	<h1>[ 아이디 찾기 ]</h1>
+		<form action="/members/findId" method="post" th:object="${member}">
+  			<label for="name">이름:</label>
+  			<input type="text" id="member_name" name="member_name" required><br>
+  			<label for="email">이메일:</label>
+  			<input type="email" id="member_email" name="member_email" required><br>
+  			<button type="submit">아이디 찾기</button>
+  	<table>
+    	<tr>
+      		<th>아이디</th>
+    	</tr>
+    	<tr th:each="member : ${findId}">
+      		<td th:text="${member.member_id}"></td>
+    	</tr>
+    		 <th:block th:if="${findId == null or #lists.isEmpty(findId)}">
+    		<td colspan="1">입력하신 정보와 일치하는 아이디가 없습니다.</td>
+  			</th:block>
+  </table>
+</form>
+
+<footer id="footers">여기에 footer 위치</footer>
+</body>
+</html>
